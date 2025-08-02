@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Álbum Digital Interactivo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+    }
+
+    .album {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .portada {
+      width: 100%;
+      height: 100%;
+      background: url('montana-atardecer.jpg') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .portada button {
+      padding: 1em 2em;
+      font-size: 1.2em;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .pagina {
+      display: none;
+      width: 100%;
+      height: 100%;
+      background-color: #fff8dc;
+      position: relative;
+      padding: 2em;
+      justify-content: space-between;
+      border: 10px solid #001f3f;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .pagina.abierta {
+      display: flex;
+    }
+
+    .hoja {
+      width: 48%;
+      height: 100%;
+      background-color: #fff8dc;
+      position: relative;
+      border: 2px solid #001f3f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      transition: transform 0.5s ease;
+    }
+
+    .hoja img {
+      width: 90%;
+      height: 80%;
+      object-fit: contain;
+      border: 2px solid #001f3f;
+      margin-top: 0.5em;
+    }
+
+    .argolla {
+      width: 5px;
+      height: 100%;
+      background-color: silver;
+      border-radius: 5px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .controles {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .controles button {
+      padding: 0.5em 1em;
+      font-size: 1em;
+      background-color: #001f3f;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="album">
+    <div class="portada" id="portada">
+      <button onclick="mostrarPagina(0)">Entrar al Álbum</button>
+    </div>
+
+    <!-- Páginas del álbum generadas dinámicamente con imágenes precargadas -->
+    <script>
+      window.onload = function () {
+        const album = document.querySelector(".album");
+        const portada = document.getElementById("portada");
+
+        const imagenes = [
+          "foto (1).jpg", "foto (2).jpg", "foto (3).jpg", "foto (4).jpg", "foto (5).jpg",
+          "foto (6).jpg", "foto (7).jpg", "foto (8).jpg", "foto (9).jpg", "foto (10).jpg",
+          "foto (11).jpg", "foto (12).jpg", "foto (13).jpg", "foto (14).jpg", "foto (15).jpg",
+          "foto (16).jpg", "foto (17).jpg", "foto (18).jpg", "foto (19).jpg", "foto (20).jpg",
+          "foto (21).jpg", "foto (22).jpg", "foto (23).jpg", "foto (24).jpg", "foto (25).jpg",
+          "foto (26).jpg", "foto (27).jpg", "foto (28).jpg", "foto (29).jpg", "foto (30).jpg"
+        ];
+
+        let paginaActual = 0;
+
+        for (let i = 0; i < imagenes.length; i += 2) {
+          const pagina = document.createElement("div");
+          pagina.classList.add("pagina");
+
+          const hojaIzq = document.createElement("div");
+          hojaIzq.classList.add("hoja");
+          hojaIzq.innerHTML = `<img src="imagenes/${imagenes[i]}" alt="Imagen ${i + 1}">`;
+
+          const hojaDer = document.createElement("div");
+          hojaDer.classList.add("hoja");
+          if (imagenes[i + 1]) {
+            hojaDer.innerHTML = `<img src="imagenes/${imagenes[i + 1]}" alt="Imagen ${i + 2}">`;
+          }
+
+          const argolla = document.createElement("div");
+          argolla.classList.add("argolla");
+
+          const controles = document.createElement("div");
+          controles.classList.add("controles");
+          controles.innerHTML = `
+            <button onclick="paginaAnterior()">Anterior</button>
+            <button onclick="paginaSiguiente()">Siguiente</button>
+            <button onclick="volverPortada()">Portada</button>
+          `;
+
+          pagina.appendChild(hojaIzq);
+          pagina.appendChild(argolla);
+          pagina.appendChild(hojaDer);
+          pagina.appendChild(controles);
+
+          album.appendChild(pagina);
+        }
+
+        const paginas = document.querySelectorAll(".pagina");
+
+        window.mostrarPagina = function (indice) {
+          if (indice >= 0 && indice < paginas.length) {
+            portada.style.display = "none";
+            paginas.forEach(p => p.classList.remove("abierta"));
+            paginas[indice].classList.add("abierta");
+            paginaActual = indice;
+          }
+        };
+
+        window.paginaSiguiente = function () {
+          if (paginaActual + 1 < paginas.length) {
+            mostrarPagina(paginaActual + 1);
+          }
+        };
+
+        window.paginaAnterior = function () {
+          if (paginaActual - 1 >= 0) {
+            mostrarPagina(paginaActual - 1);
+          }
+        };
+
+        window.volverPortada = function () {
+          paginas.forEach(p => p.classList.remove("abierta"));
+          portada.style.display = "flex";
+          paginaActual = 0;
+        };
+      };
+    </script>
+  </div>
+</body>
+</html>
